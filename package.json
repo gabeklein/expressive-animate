@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "good-timing": "^1.0.0-alpha.3",
-    "use-stateful": "^1.1.1"
+    "use-stateful": "^1.1.2"
   },
   "peerDependencies": {
     "react": "^16.8.6"

@@ -21,6 +21,6 @@ good-timing@^1.0.0-alpha.3:
   version "1.0.0-alpha.3"
   resolved "https://registry.yarnpkg.com/good-timing/-/good-timing-1.0.0-alpha.3.tgz#5f144dcf389e902a82085986034040894a537bb8"
 
-use-stateful@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/use-stateful/-/use-stateful-1.1.1.tgz#1eae589c2919384f3e233bf3f31013771095ac77"
+use-stateful@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/use-stateful/-/use-stateful-1.1.2.tgz#5c0ec627d50395acedb2844b3e9634f41406df6c"
