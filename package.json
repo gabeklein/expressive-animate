@@ -4,15 +4,16 @@
   "description": "Drop-in transition manager between mounting and unmounting children.",
   "main": "lib/index.js",
   "types": "index.d.ts",
+  "repository": "https://github.com/gabeklein/use-conveyor",
   "author": {
     "name": "Gabe Klein",
-    "email": "gabe@termtm.com"
+    "email": "gabe@termtm.com",
+    "url": "https://github.com/gabeklein"
   },
   "scripts": {
-    "build": "rollup --config",
-    "watch": "rollup --config --watch --sourcemap",
-    "prebuild": "rm -rf lib",
-    "prepare": "npm run build"
+    "build": "tsc",
+    "prepublish": "npm run build",
+    "prebuild": "rm -rf lib/"
   },
   "license": "MIT",
   "files": [

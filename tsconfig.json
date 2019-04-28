@@ -1,8 +1,10 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
-        "outDir": "lib/",
-        "target": "ESNext",
+        "baseUrl": "src",
+        "rootDir": "src",
+        "outDir": "lib",
+        "target": "ESNEXT",
+        "module": "CommonJS",
         "moduleResolution": "node",
         "noUnusedLocals": true,
         "strict": true,
@@ -10,6 +12,6 @@
         "jsx": "react"
     },
     "include": [
-        "src/*.ts", "src/index.tsx"
+        "src/index.tsx"
     ]
   }
