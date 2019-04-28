@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "outDir": "lib/",
+        "target": "ESNext",
+        "moduleResolution": "node",
+        "noUnusedLocals": true,
+        "strict": true,
+        "esModuleInterop": true,
+        "jsx": "react"
+    },
+    "include": [
+        "src/*.ts", "src/index.tsx"
+    ]
+  }

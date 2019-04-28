@@ -1,0 +1,35 @@
+{
+  "name": "use-conveyor",
+  "version": "1.0.0-alpha.0",
+  "description": "Drop-in transition manager between mounting and unmounting children.",
+  "main": "lib/index.js",
+  "types": "index.d.ts",
+  "author": {
+    "name": "Gabe Klein",
+    "email": "gabe@termtm.com"
+  },
+  "scripts": {
+    "build": "rollup --config",
+    "watch": "rollup --config --watch --sourcemap",
+    "prebuild": "rm -rf lib",
+    "prepare": "npm run build"
+  },
+  "license": "MIT",
+  "files": [
+    "/lib",
+    "index.d.ts"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "good-timing": "^1.0.0-alpha.3",
+    "use-stateful": "^1.1.1"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6"
+  },
+  "devDependencies": {
+    "@types/react": "^16.8.14"
+  }
+}
