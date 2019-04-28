@@ -21,7 +21,7 @@ interface KeyFrameProps {
   childKey: string
 }
 
-const KeyFrame = React.memo<KeyFrameProps>((props) => {
+const Conveyor = React.memo<KeyFrameProps>((props) => {
     const {
         onEnter = "incoming",
         onLeave = "outgoing",
@@ -95,5 +95,5 @@ const KeyFrame = React.memo<KeyFrameProps>((props) => {
 
 export {
   useConveyorState,
-  KeyFrame
+  Conveyor
 }
