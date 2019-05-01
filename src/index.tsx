@@ -1,4 +1,4 @@
-import React, { createContext, useContext, Fragment } from 'react';
+import React, { createContext, useContext, Fragment, SFC } from 'react';
 import { useStates } from 'use-stateful';
 import { Sleep } from "good-timing";
 
@@ -22,7 +22,7 @@ interface KeyFrameProps {
 }
 
 const Conveyor = React.memo<KeyFrameProps>((props) => {
-    const {
+    let {
         onEnter = "incoming",
         onLeave = "outgoing",
         reverse = false,
@@ -32,6 +32,8 @@ const Conveyor = React.memo<KeyFrameProps>((props) => {
         children,
         childKey
     } = props;
+
+    childKey = childKey.toString();
     
     const $ = useStates(() => ({
         currentContent: children,
@@ -68,30 +70,60 @@ const Conveyor = React.memo<KeyFrameProps>((props) => {
         ? [onLeave, onEnter]
         : [onEnter, onLeave];
 
-    const Container = className ? "div" : Fragment;
-    const including = className ? { className } : {};
+    const outState = $.oldContent ? classEnd : "active";
+    const inState = $.active ? "active" : classStart;
 
     return (
       <Fragment>
         <TransitionStateProvider
-          value={[$.oldContent ? classEnd : "active"]}>
+          value={[outState]}>
           <Container
-            {...including}
-            key={$.oldKey || $.currentKey}>
-            {$.oldContent || children}
-          </Container>
+            className = {className}
+            innerKey = {$.oldKey || $.currentKey}
+            state = {outState}
+            inner = {$.oldContent || children}
+          />
         </TransitionStateProvider>
         <TransitionStateProvider
-          value={[$.active ? "active" : classStart]}>
+          value={[inState]}>
           {$.oldContent && (
-            <Container {...including} key={$.currentKey}>
-              {children}
-            </Container>
+            <Container 
+              className = {className}
+              innerKey = {$.currentKey}
+              state = {inState}
+              inner = {children} 
+            />
           )}
         </TransitionStateProvider>
       </Fragment>
     )
 })
+
+interface ContainerProps {
+  inner: any;
+  className?: string;
+  innerKey: any;
+  state: string;
+}
+
+const Container: SFC<ContainerProps> = 
+  ({ inner, className, state, innerKey }) => {
+    if(className) 
+      return (
+        <div 
+          key = { innerKey }
+          className = {className + " " + state}>
+          {inner}
+        </div>
+      )
+    
+    return (
+      <Fragment
+        key = { innerKey }>
+        {inner}
+      </Fragment>
+    )
+  }
 
 export {
   useConveyorState,
