@@ -24,7 +24,7 @@
     "access": "public"
   },
   "dependencies": {
-    "good-timing": "^1.0.0-alpha.3",
+    "good-timing": "^2.0.0",
     "use-stateful": "^1.1.2"
   },
   "peerDependencies": {
