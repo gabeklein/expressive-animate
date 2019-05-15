@@ -17,11 +17,13 @@ interface KeyFrameProps {
   onActive?: string
   reverse?: boolean
   time?: number
-  didFinish?: VoidFunction
   className?: string
   onStatus?: { [key: string]: string } 
   children?: any[] | any
   currentKey: string
+
+  didFinish?(): void
+  shouldAnimateUpdate?(currentKey: string): string | false;
 }
 
 interface InnerContentProps {
@@ -41,7 +43,8 @@ const Conveyor = React.memo<KeyFrameProps>((props) => {
     didFinish,
     className,
     children,
-    currentKey
+    currentKey,
+    shouldAnimateUpdate
   } = props;
 
   currentKey = String(currentKey);
@@ -56,7 +59,18 @@ const Conveyor = React.memo<KeyFrameProps>((props) => {
       oldKey: undefined as any | undefined,
       currentKey: currentKey,
       active: false,
-      async transition(currentKey: string, children: string){
+
+      async activateIfShould(){
+        if(shouldAnimateUpdate){
+          const newKey = shouldAnimateUpdate($.currentKey);
+          if(newKey)
+            currentKey = newKey;
+          else
+            return
+        }
+        else if(currentKey === $.currentKey)
+            return
+
         this.oldKey = this.currentKey;
         this.oldContent = this.currentContent;
         this.currentContent = children;
@@ -78,8 +92,7 @@ const Conveyor = React.memo<KeyFrameProps>((props) => {
     }
   });
   
-  if(currentKey != $.currentKey)
-    $.transition(currentKey, children);
+  $.activateIfShould();
   
   const [classStart, classEnd] = reverse 
     ? [onLeave, onEnter]

@@ -5,10 +5,12 @@ interface KeyFrameProps {
     onLeave?: string
     reverse?: boolean
     time?: number
-    didFinish?: VoidFunction
     className?: string
     children?: any[] | any
     childKey?: string
+
+    didFinish?(): void
+    shouldAnimateUpdate?(currentKey: string): string | false;
   }
 
 declare type useConveyorState = () => [string];
