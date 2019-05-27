@@ -1,6 +1,5 @@
-import React, { createContext, useContext, Fragment, SFC } from 'react';
-import { useStates } from 'use-stateful';
-import { sleep } from "good-timing";
+import React, { createContext, Fragment, SFC, useContext, useEffect, useRef, useState } from 'react';
+import { sleep } from 'good-timing';
 
 const TransitionState = createContext([""]);
 const TransitionStateProvider = TransitionState.Provider;
@@ -10,7 +9,18 @@ const useConveyorState = () => useContext(TransitionState);
 // const PendingStateProvider = PendingState.Provider;
 // const usePendingState = () => useContext(PendingState);
 
-interface KeyFrameProps {
+// const useOnDidMount = (cb: VoidFunction) => useEffect(() => { cb() }, []);
+const useOnWillUnmount = (cb: VoidFunction) => useEffect(() => cb, []);
+
+export function useConstant<T = any>(init: () => T): T {
+  const ref = useRef<T>(null as unknown as T);
+  if(!ref.current)
+    ref.current = init ? init() : {} as T;
+    
+  return ref.current;
+}
+
+interface ConveyorProps {
   onEnter?: string
   onLeave?: string
   onStable?: string
@@ -21,129 +31,176 @@ interface KeyFrameProps {
   onStatus?: { [key: string]: string } 
   children?: any[] | any
   currentKey: string
+  animateOnMount: boolean
 
   didFinish?(): void
-  shouldAnimateUpdate?(currentKey: string): string | false;
+  shouldAnimateUpdate?(currentKey: string): string | boolean;
 }
 
 interface InnerContentProps {
-  inner: any;
+  children: any;
   className?: string;
-  innerKey: any;
   state: string;
 }
 
-const Conveyor = React.memo<KeyFrameProps>((props) => {
+interface ConveyorStatus {
+  active: boolean;
+  key: string;
+  content: any;
+  outgoingContent?: any;
+  outgoingKey?: string;
+}
+
+function useRefresh(){
+  const { 1: update } = useState(0);
+  return () => {
+    update(Math.random)
+  };
+}
+
+function useConveyorStatus(
+  props: ConveyorProps
+): ConveyorStatus {
+
+  const requestUpdate = useRefresh();
+  const {
+    shouldAnimateUpdate,
+    time,
+    children,
+    didFinish,
+    currentKey
+  } = props;
+
+  const status = useConstant(() => {
+    const status = {
+      content: children,
+      key: currentKey
+    } as any;
+
+    if(props.animateOnMount){
+      status.active = false;
+      sleep(1, () => {
+        status.active = true;
+        requestUpdate();
+      })
+    }
+    else {
+      status.active = true;
+    }
+
+    return status as ConveyorStatus;
+  })
+
+  useOnWillUnmount(() => {
+    for(const x in status){
+      delete (status as any)[x]
+    }
+  })
+
+  const existingContent = status.content;
+  const existingKey = status.key;
+
+  status.content = children
+
+  if(shouldAnimateUpdate){
+    const newKey = shouldAnimateUpdate(existingKey);
+    
+    if(!newKey || newKey === existingKey)
+      return status;
+
+    if(newKey !== true 
+    && newKey !== status.key)
+      status.key = newKey
+  }
+  
+  else if(currentKey === existingKey)
+    return status;
+
+  else {
+    status.key = currentKey;
+    if(existingKey === undefined)
+      return status;
+  }
+
+  status.outgoingContent = existingContent;
+  status.outgoingKey = existingKey;
+  status.active = false;
+
+  sleep(1, () => {
+    status.active = true;
+    requestUpdate();
+  });
+
+  sleep(time || 300, () => {
+    status.outgoingContent = undefined;
+    status.outgoingKey = undefined;
+    if(typeof didFinish == "function")
+      didFinish();
+    requestUpdate();
+  })
+
+  return status;
+}
+
+const Conveyor = React.memo<ConveyorProps>((props) => {
   let {
     onEnter = "incoming",
     onLeave = "outgoing",
     onStable = "stable",
     reverse = false,
-    time = 300,
-    didFinish,
-    className,
-    children,
-    currentKey,
-    shouldAnimateUpdate
+    className
   } = props;
 
-  currentKey = String(currentKey);
-  
-  const $ = useStates(() => { 
-    sleep(10, () => {
-      $.active = true;
-    })
-    return {
-      currentContent: children,
-      oldContent: undefined as any,
-      oldKey: undefined as any | undefined,
-      currentKey: currentKey,
-      active: false,
+  const {
+    content,
+    outgoingContent,
+    key,
+    outgoingKey,
+    active
+  } = useConveyorStatus(props);
 
-      async activateIfShould(){
-        if(shouldAnimateUpdate){
-          const newKey = shouldAnimateUpdate($.currentKey);
-          if(newKey)
-            currentKey = newKey;
-          else
-            return
-        }
-        else if(currentKey === $.currentKey)
-            return
-
-        this.oldKey = this.currentKey;
-        this.oldContent = this.currentContent;
-        this.currentContent = children;
-        this.currentKey = currentKey;
-        this.active = false;
-    
-        sleep(1, () => {
-          this.active = true;
-        })
-    
-        sleep(time, () => {
-          this.oldContent = undefined;
-          this.oldKey = undefined;
-    
-          if(typeof didFinish == "function")
-            didFinish();
-        })
-      }
-    }
-  });
-  
-  $.activateIfShould();
-  
   const [classStart, classEnd] = reverse 
     ? [onLeave, onEnter]
     : [onEnter, onLeave];
 
-  const outState = $.oldContent ? classEnd : onStable;
-  const inState = $.active ? onStable : classStart;
+  const outState = outgoingContent ? classEnd : onStable;
+  const inState = active ? onStable : classStart;
 
   return (
     <Fragment>
-      <InnerContent
-        className={className}
-        innerKey={$.oldKey || $.currentKey}
-        state={outState}
-        inner={$.oldContent || children}
-      />
       <InnerContent 
         className={className}
-        innerKey={$.currentKey}
-        state={inState}
-        inner={$.oldContent && children} 
-      />
+        key={key}
+        state={inState}> 
+        {content} 
+      </InnerContent>
+      { outgoingKey 
+        ? <InnerContent
+            className={className}
+            key={outgoingKey}
+            state={outState}>
+            {outgoingContent}
+          </InnerContent>
+        : false
+      }
     </Fragment>
   )
 })
 
 const InnerContent: SFC<InnerContentProps> = 
-  ({ inner, className, state, innerKey }) => {
-    return (
-      <TransitionStateProvider 
-        value={[state]}>
-        {inner 
-          ? className
-            ? (
-              <div 
-                key={innerKey} 
-                className={className + " " + state}>
-                {inner}
-              </div>
-            )
-            : (
-              <Fragment
-                key={innerKey}>
-                {inner}
-              </Fragment>
-            ) 
-          : false
-        }
-      </TransitionStateProvider>
-    )
-  }
+  ({ children, className, state }) => (
+    <TransitionStateProvider value={[state]}>
+      {className
+        ? <div 
+            className={className + " " + state}>
+            {...children}
+          </div>
+        : <Fragment>
+            {...children}
+          </Fragment>
+      }
+    </TransitionStateProvider>
+  )
 
 export {
   useConveyorState,

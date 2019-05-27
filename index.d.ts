@@ -10,7 +10,7 @@ interface KeyFrameProps {
     childKey?: string
 
     didFinish?(): void
-    shouldAnimateUpdate?(currentKey: string): string | false;
+    shouldAnimateUpdate?(currentKey: string): string | boolean;
   }
 
 declare type useConveyorState = () => [string];

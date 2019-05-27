@@ -1,6 +1,6 @@
 {
   "name": "use-conveyor",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.6",
   "description": "Drop-in transition manager between mounting and unmounting children.",
   "main": "lib/index.js",
   "types": "index.d.ts",
