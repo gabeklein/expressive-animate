@@ -1,4 +1,4 @@
-import React, { createContext, Fragment, SFC, useContext, useEffect, useRef, useState } from 'react';
+import React, { memo, createContext, Fragment, SFC, useContext, useEffect, useRef, useState } from 'react';
 import { sleep } from 'good-timing';
 
 const TransitionState = createContext([""]);
@@ -34,7 +34,7 @@ interface ConveyorProps {
   animateOnMount: boolean
 
   didFinish?(): void
-  shouldAnimateUpdate?(currentKey: string): string | boolean;
+  shouldUpdateAnimate?(currentKey: string): string | boolean;
 }
 
 interface InnerContentProps {
@@ -61,16 +61,16 @@ function useRefresh(){
 function useConveyorStatus(
   props: ConveyorProps
 ): ConveyorStatus {
-
-  const requestUpdate = useRefresh();
+  
   const {
-    shouldAnimateUpdate,
+    shouldUpdateAnimate,
     time,
     children,
     didFinish,
     currentKey
   } = props;
 
+  const requestUpdate = useRefresh();
   const status = useConstant(() => {
     const status = {
       content: children,
@@ -102,8 +102,8 @@ function useConveyorStatus(
 
   status.content = children
 
-  if(shouldAnimateUpdate){
-    const newKey = shouldAnimateUpdate(existingKey);
+  if(shouldUpdateAnimate){
+    const newKey = shouldUpdateAnimate(existingKey);
     
     if(!newKey || newKey === existingKey)
       return status;
@@ -142,7 +142,7 @@ function useConveyorStatus(
   return status;
 }
 
-const Conveyor = React.memo<ConveyorProps>((props) => {
+const Conveyor = memo<ConveyorProps>((props) => {
   let {
     onEnter = "incoming",
     onLeave = "outgoing",

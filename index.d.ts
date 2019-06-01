@@ -10,13 +10,13 @@ interface KeyFrameProps {
     childKey?: string
 
     didFinish?(): void
-    shouldAnimateUpdate?(currentKey: string): string | boolean;
+    shouldUpdateAnimate?(currentKey: string): string | boolean;
   }
 
 declare type useConveyorState = () => [string];
 declare type Conveyor = NamedExoticComponent<KeyFrameProps>;
 
 export {
-    useConveyorState,
-    Conveyor
+  useConveyorState,
+  Conveyor
 }
