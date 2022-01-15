@@ -1,7 +1,7 @@
 import Model, { on } from '@expressive/mvc';
 import React, { Fragment, memo, ReactNode } from 'react';
 
-class Control extends Model {
+class Animate extends Model {
   // from props
   didAnimate?(): void
   shouldAnimate?(newKey: string): boolean;
@@ -76,7 +76,7 @@ const Conveyor = memo<ConveyorProps>((props) => {
     exitKey,
     exitChildren,
     active
-  } = Control.use(state => {
+  } = Animate.use(state => {
     if(props.animateOnMount)
       state.runTransition()
   });
