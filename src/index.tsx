@@ -56,17 +56,15 @@ class Animate extends Model {
 }
 
 interface ConveyorProps {
-  onEnter?: string
-  onLeave?: string
-  onStable?: string
-  onActive?: string
-  reverse?: boolean
-  duration?: number
-  className?: string
-  onStatus?: { [key: string]: string } 
-  children?: any[] | any
-  currentKey: string
-  animateOnMount: boolean
+  children: any[] | any;
+  currentKey: string;
+
+  className?: string;
+  duration?: number;
+  onEnter?: string;
+  onExit?: string;
+  onStable?: string;
+  reverse?: boolean;
 
   didAnimate?(): void
   shouldAnimate?(newKey: string): boolean;
@@ -75,7 +73,7 @@ interface ConveyorProps {
 const Conveyor = memo<ConveyorProps>((props) => {
   let {
     onEnter = "enter",
-    onLeave = "exit",
+    onExit = "exit",
     onStable = "stable",
     reverse = false,
     className = "conveyor"
@@ -89,10 +87,7 @@ const Conveyor = memo<ConveyorProps>((props) => {
     exitChildren,
     exitElement,
     active
-  } = Animate.use(state => {
-    if(props.animateOnMount)
-      state.runTransition()
-  });
+  } = Animate.use();
 
   state.import(props, [
     "currentKey",
@@ -103,8 +98,8 @@ const Conveyor = memo<ConveyorProps>((props) => {
   ])
 
   const [classStart, classEnd] = reverse 
-    ? [onLeave, onEnter]
-    : [onEnter, onLeave];
+    ? [onExit, onEnter]
+    : [onEnter, onExit];
 
   const enter = `${className} ${active ? onStable : classStart}`;
   const exit = `${className} ${exitChildren ? classEnd : onStable}`;
