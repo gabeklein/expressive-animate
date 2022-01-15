@@ -1,10 +1,9 @@
 {
-  "name": "use-conveyor",
-  "version": "1.0.0-alpha.6",
-  "description": "Drop-in transition manager between mounting and unmounting children.",
+  "name": "@expressive/animate",
+  "version": "1.0.0-beta.0",
   "main": "lib/index.js",
   "types": "index.d.ts",
-  "repository": "https://github.com/gabeklein/use-conveyor",
+  "repository": "https://github.com/gabeklein/expressive-animate",
   "author": {
     "name": "Gabe Klein",
     "email": "gabe@termtm.com",
@@ -12,9 +11,10 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepublish": "npm run build",
     "watch": "tsc -w --sourcemap",
-    "prebuild": "rm -rf lib/"
+    "preversion": "npm run build",
+    "publish:beta": "npm version prerelease --preid=beta",
+    "postversion": "npm publish"
   },
   "license": "MIT",
   "files": [
