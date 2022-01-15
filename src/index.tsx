@@ -6,7 +6,7 @@ class Animate extends Model {
   didAnimate?(): void
   shouldAnimate?(newKey: string): boolean;
 
-  time = 1000;
+  duration = 300;
   animateOnMount = false;
   children: ReactNode;
   currentKey = on("", next => {
@@ -38,7 +38,7 @@ class Animate extends Model {
 
       if(typeof this.didAnimate == "function")
         this.didAnimate();
-    }, this.time)
+    }, this.duration)
 
   }
 }
@@ -49,7 +49,7 @@ interface ConveyorProps {
   onStable?: string
   onActive?: string
   reverse?: boolean
-  time?: number
+  duration?: number
   className?: string
   onStatus?: { [key: string]: string } 
   children?: any[] | any
@@ -84,7 +84,7 @@ const Conveyor = memo<ConveyorProps>((props) => {
   state.import(props, [
     "currentKey",
     "children",
-    "time",
+    "duration",
     "shouldUpdateAnimate",
     "didAnimate"
   ])
@@ -95,18 +95,23 @@ const Conveyor = memo<ConveyorProps>((props) => {
 
   const enter = active ? onStable : classStart;
   const exit = exitChildren ? classEnd : onStable;
+  const style = {
+    transitionDuration: state.duration + "ms"
+  }
 
   return (
     <Fragment>
       <Content 
         key={key}
         className={className}
+        style={style}
         state={enter}> 
         {children} 
       </Content>
       { exitKey 
         ? <Content
             key={exitKey}
+            style={style}
             className={className}
             state={exit}>
             {exitChildren}
@@ -121,16 +126,17 @@ interface InnerContentProps {
   children: any;
   className?: string;
   state: string;
+  style: React.CSSProperties;
 }
 
 const Content = (props: InnerContentProps) => {
-  const { children, className, state } = props;
+  const { children, className, state, style } = props;
 
   if(!className)
     return children;
 
   return (
-    <div className={className + " " + state}>
+    <div style={style} className={className + " " + state}>
       {children}
     </div>
   )
