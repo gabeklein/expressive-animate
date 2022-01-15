@@ -1,13 +1,5 @@
 import Model, { on } from '@expressive/mvc';
-import React, { Fragment, memo, ReactNode, useRef } from 'react';
-
-export function useConstant<T = any>(init: () => T): T {
-  const ref = useRef<T>(null as unknown as T);
-  if(!ref.current)
-    ref.current = init ? init() : {} as T;
-    
-  return ref.current;
-}
+import React, { Fragment, memo, ReactNode } from 'react';
 
 interface ConveyorProps {
   onEnter?: string
@@ -134,22 +126,22 @@ const Conveyor = memo<ConveyorProps>((props) => {
     ? [onLeave, onEnter]
     : [onEnter, onLeave];
 
-  const outState = exitChildren ? classEnd : onStable;
-  const inState = active ? onStable : classStart;
+  const enter = active ? onStable : classStart;
+  const exit = exitChildren ? classEnd : onStable;
 
   return (
     <Fragment>
       <Content 
         className={className}
         key={key}
-        state={inState}> 
+        state={enter}> 
         {children} 
       </Content>
       { exitKey 
         ? <Content
             className={className}
             key={exitKey}
-            state={outState}>
+            state={exit}>
             {exitChildren}
           </Content>
         : false
