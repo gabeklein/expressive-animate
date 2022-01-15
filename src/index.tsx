@@ -33,33 +33,38 @@ class Animate extends Model {
 
     await this.update();
 
-    const exit = this.exitElement.current;
-
-    if(exit){
-      const reset = (e: any) => {
-        clearTimeout(timeout);
-        exit.removeEventListener("transitionend", reset);
-        exit.removeEventListener("transitioncancel", reset);
-  
-        if(e instanceof Event && e.type == "transitionend")
-          this.reset();
-        else
-          this.reset(true);
-      }
-
-      const timeout = setTimeout(reset, this.timeout);  
-      exit.addEventListener("transitionend", reset);
-      exit.addEventListener("transitioncancel", reset);
-    }
-
     this.active = true;
+    this.ensureReset();
   }
 
-  reset = (cancelled?: boolean) => {
+  ensureReset(){
+    const exit = this.exitElement.current;
+
+    if(!exit)
+      return;
+
+    const reset = (e: any) => {
+      clearTimeout(timeout);
+      exit.removeEventListener("transitionend", reset);
+      exit.removeEventListener("transitioncancel", reset);
+
+      if(e instanceof Event && e.type == "transitionend")
+        this.reset();
+      else
+        this.reset(true);
+    }
+
+    const timeout = setTimeout(reset, this.timeout);
+
+    exit.addEventListener("transitionend", reset);
+    exit.addEventListener("transitioncancel", reset);
+  }
+
+  reset = (didCancel?: boolean) => {
     this.exitChildren = undefined;
     this.exitKey = undefined;
 
-    if(!cancelled && typeof this.didAnimate == "function")
+    if(!didCancel && typeof this.didAnimate == "function")
       this.didAnimate();
   }
 }
