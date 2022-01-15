@@ -26,24 +26,33 @@ class Animate extends Model {
 
   exitChildren?: ReactNode = undefined;
   exitKey?: string = undefined;
+  exitElement = ref<HTMLDivElement>();
 
-  exitElement = ref((el: HTMLDivElement) => {
-    if(el){
-      el.addEventListener("transitionend", () => this.reset());
-      el.addEventListener("transitioncancel", () => this.reset(true));
-    }
-  })
-
-  runTransition(){
+  async runTransition(){
     this.active = false;
+
+    await this.update();
+
+    const exit = this.exitElement.current;
+
+    if(exit){
+      const reset = (e: any) => {
+        clearTimeout(timeout);
+        exit.removeEventListener("transitionend", reset);
+        exit.removeEventListener("transitioncancel", reset);
   
-    setTimeout(() => {
-      this.active = true;
-    }, 1);
-  
-    setTimeout(() => {
-      this.reset(true);
-    }, this.timeout)
+        if(e instanceof Event && e.type == "transitionend")
+          this.reset();
+        else
+          this.reset(true);
+      }
+
+      const timeout = setTimeout(reset, this.timeout);  
+      exit.addEventListener("transitionend", reset);
+      exit.addEventListener("transitioncancel", reset);
+    }
+
+    this.active = true;
   }
 
   reset = (cancelled?: boolean) => {
