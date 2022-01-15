@@ -55,22 +55,7 @@ class Animate extends Model {
   }
 }
 
-interface ConveyorProps {
-  children: any[] | any;
-  currentKey: string;
-
-  className?: string;
-  duration?: number;
-  onEnter?: string;
-  onExit?: string;
-  onStable?: string;
-  reverse?: boolean;
-
-  didAnimate?(): void
-  shouldAnimate?(newKey: string): boolean;
-}
-
-const Conveyor = memo<ConveyorProps>((props) => {
+const Conveyor = memo<Conveyor.Props>((props) => {
   let {
     onEnter = "enter",
     onExit = "exit",
@@ -125,6 +110,23 @@ const Conveyor = memo<ConveyorProps>((props) => {
     </Fragment>
   )
 })
+
+namespace Conveyor {
+  export interface Props {
+    children: any[] | any;
+    currentKey: string;
+  
+    className?: string;
+    duration?: number;
+    onEnter?: string;
+    onExit?: string;
+    onStable?: string;
+    reverse?: boolean;
+  
+    didAnimate?(): void
+    shouldAnimate?(newKey: string): boolean;
+  }
+}
 
 export {
   Conveyor
