@@ -108,9 +108,7 @@ const Conveyor = memo<ConveyorProps>((props) => {
 
   const enter = `${className} ${active ? onStable : classStart}`;
   const exit = `${className} ${exitChildren ? classEnd : onStable}`;
-  const style = {
-    transitionDuration: state.duration + "ms"
-  }
+  const style = { transitionDuration: state.duration + "ms" };
 
   return (
     <Fragment>
@@ -120,15 +118,14 @@ const Conveyor = memo<ConveyorProps>((props) => {
         style={style}> 
         {children} 
       </div>
-      { exitKey 
-        ? <div
-            ref={exitElement}
-            key={exitKey}
-            style={style}
-            className={exit}>
-            {exitChildren}
-          </div>
-        : false
+      { exitKey && 
+        <div
+          key={exitKey}
+          className={exit}
+          style={style}
+          ref={exitElement}>
+          {exitChildren}
+        </div>
       }
     </Fragment>
   )
