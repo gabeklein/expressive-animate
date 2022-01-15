@@ -66,7 +66,7 @@ const Conveyor = memo<ConveyorProps>((props) => {
     onLeave = "exit",
     onStable = "stable",
     reverse = false,
-    className
+    className = "conveyor"
   } = props;
 
   const {
@@ -93,54 +93,32 @@ const Conveyor = memo<ConveyorProps>((props) => {
     ? [onLeave, onEnter]
     : [onEnter, onLeave];
 
-  const enter = active ? onStable : classStart;
-  const exit = exitChildren ? classEnd : onStable;
+  const enter = `${className} ${active ? onStable : classStart}`;
+  const exit = `${className} ${exitChildren ? classEnd : onStable}`;
   const style = {
     transitionDuration: state.duration + "ms"
   }
 
   return (
     <Fragment>
-      <Content 
+      <div 
         key={key}
-        className={className}
-        style={style}
-        state={enter}> 
+        className={enter}
+        style={style}> 
         {children} 
-      </Content>
+      </div>
       { exitKey 
-        ? <Content
+        ? <div
             key={exitKey}
             style={style}
-            className={className}
-            state={exit}>
+            className={exit}>
             {exitChildren}
-          </Content>
+          </div>
         : false
       }
     </Fragment>
   )
 })
-
-interface InnerContentProps {
-  children: any;
-  className?: string;
-  state: string;
-  style: React.CSSProperties;
-}
-
-const Content = (props: InnerContentProps) => {
-  const { children, className, state, style } = props;
-
-  if(!className)
-    return children;
-
-  return (
-    <div style={style} className={className + " " + state}>
-      {children}
-    </div>
-  )
-}
 
 export {
   Conveyor
