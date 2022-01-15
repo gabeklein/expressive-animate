@@ -1,29 +1,6 @@
 import Model, { on } from '@expressive/mvc';
 import React, { Fragment, memo, ReactNode } from 'react';
 
-interface ConveyorProps {
-  onEnter?: string
-  onLeave?: string
-  onStable?: string
-  onActive?: string
-  reverse?: boolean
-  time?: number
-  className?: string
-  onStatus?: { [key: string]: string } 
-  children?: any[] | any
-  currentKey: string
-  animateOnMount: boolean
-
-  didAnimate?(): void
-  shouldUpdateAnimate?(currentKey: string): string | boolean;
-}
-
-interface InnerContentProps {
-  children: any;
-  className?: string;
-  state: string;
-}
-
 class Control extends Model {
   // from props
   didAnimate?(): void
@@ -93,6 +70,23 @@ class Control extends Model {
   }
 }
 
+interface ConveyorProps {
+  onEnter?: string
+  onLeave?: string
+  onStable?: string
+  onActive?: string
+  reverse?: boolean
+  time?: number
+  className?: string
+  onStatus?: { [key: string]: string } 
+  children?: any[] | any
+  currentKey: string
+  animateOnMount: boolean
+
+  didAnimate?(): void
+  shouldUpdateAnimate?(currentKey: string): string | boolean;
+}
+
 const Conveyor = memo<ConveyorProps>((props) => {
   let {
     onEnter = "enter",
@@ -149,6 +143,12 @@ const Conveyor = memo<ConveyorProps>((props) => {
     </Fragment>
   )
 })
+
+interface InnerContentProps {
+  children: any;
+  className?: string;
+  state: string;
+}
 
 const Content = (props: InnerContentProps) => {
   const { children, className, state } = props;
