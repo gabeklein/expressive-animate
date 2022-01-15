@@ -1,22 +1,24 @@
-import { NamedExoticComponent } from "react";
+import { FC } from 'react';
 
-interface KeyFrameProps {
-    onEnter?: string
-    onLeave?: string
-    reverse?: boolean
-    time?: number
-    className?: string
-    children?: any[] | any
-    childKey?: string
-
-    didFinish?(): void
-    shouldUpdateAnimate?(currentKey: string): string | boolean;
+declare namespace Transition {
+  export interface Props {
+    children: any[] | any;
+    currentKey: string;
+  
+    className?: string;
+    duration?: number;
+    onEnter?: string;
+    onExit?: string;
+    onStable?: string;
+    reverse?: boolean;
+  
+    didAnimate?(): void
+    shouldAnimate?(newKey: string): boolean;
   }
+}
 
-declare type useConveyorState = () => [string];
-declare type Conveyor = NamedExoticComponent<KeyFrameProps>;
+declare type Transition = FC<Transition.Props>;
 
 export {
-  useConveyorState,
-  Conveyor
+  Transition
 }

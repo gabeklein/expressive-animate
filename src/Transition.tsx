@@ -69,7 +69,24 @@ class Animate extends Model {
   }
 }
 
-const Conveyor = memo<Conveyor.Props>((props) => {
+declare namespace Transition {
+  export interface Props {
+    children: any[] | any;
+    currentKey: string;
+  
+    className?: string;
+    duration?: number;
+    onEnter?: string;
+    onExit?: string;
+    onStable?: string;
+    reverse?: boolean;
+  
+    didAnimate?(): void
+    shouldAnimate?(newKey: string): boolean;
+  }
+}
+
+const Transition = memo<Transition.Props>((props) => {
   let {
     onEnter = "enter",
     onExit = "exit",
@@ -125,23 +142,4 @@ const Conveyor = memo<Conveyor.Props>((props) => {
   )
 })
 
-namespace Conveyor {
-  export interface Props {
-    children: any[] | any;
-    currentKey: string;
-  
-    className?: string;
-    duration?: number;
-    onEnter?: string;
-    onExit?: string;
-    onStable?: string;
-    reverse?: boolean;
-  
-    didAnimate?(): void
-    shouldAnimate?(newKey: string): boolean;
-  }
-}
-
-export {
-  Conveyor
-}
+export default Transition;

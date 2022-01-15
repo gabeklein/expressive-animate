@@ -3,7 +3,6 @@
   "version": "1.0.0-alpha.6",
   "description": "Drop-in transition manager between mounting and unmounting children.",
   "main": "lib/index.js",
-  "module": "src/index.tsx",
   "types": "index.d.ts",
   "repository": "https://github.com/gabeklein/use-conveyor",
   "author": {
