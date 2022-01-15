@@ -139,36 +139,37 @@ const Conveyor = memo<ConveyorProps>((props) => {
 
   return (
     <Fragment>
-      <InnerContent 
+      <Content 
         className={className}
         key={key}
         state={inState}> 
         {children} 
-      </InnerContent>
+      </Content>
       { exitKey 
-        ? <InnerContent
+        ? <Content
             className={className}
             key={exitKey}
             state={outState}>
             {exitChildren}
-          </InnerContent>
+          </Content>
         : false
       }
     </Fragment>
   )
 })
 
-const InnerContent: React.FC<InnerContentProps> = 
-  ({ children, className, state }: any) => {
-    if(!className)
-      return children;
+const Content = (props: InnerContentProps) => {
+  const { children, className, state } = props;
 
-    return (
-      <div className={className + " " + state}>
-        {children}
-      </div>
-    )
-  }
+  if(!className)
+    return children;
+
+  return (
+    <div className={className + " " + state}>
+      {children}
+    </div>
+  )
+}
 
 export {
   Conveyor
