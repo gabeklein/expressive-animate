@@ -42,14 +42,14 @@ class Control extends Model {
 
   active = true;
   key = "";
-  outgoingContent?: ReactNode = undefined;
-  outgoingKey?: string = undefined; 
+  exitChildren?: ReactNode = undefined;
+  exitKey?: string = undefined; 
 
   currentKey = on("", next => {
     this.runTransition();
 
-    this.outgoingContent = this.children;
-    this.outgoingKey = this.key;
+    this.exitChildren = this.children;
+    this.exitKey = this.key;
     this.key = next;
   })
 
@@ -91,8 +91,8 @@ class Control extends Model {
     }, 1);
   
     setTimeout(() => {
-      this.outgoingContent = undefined;
-      this.outgoingKey = undefined;
+      this.exitChildren = undefined;
+      this.exitKey = undefined;
 
       if(typeof this.didAnimate == "function")
         this.didAnimate();
@@ -103,26 +103,26 @@ class Control extends Model {
 
 const Conveyor = memo<ConveyorProps>((props) => {
   let {
-    onEnter = "incoming",
-    onLeave = "outgoing",
+    onEnter = "enter",
+    onLeave = "exit",
     onStable = "stable",
     reverse = false,
     className
   } = props;
 
   const {
-    get: status,
-    children: content,
-    outgoingContent,
+    get: state,
     key,
-    outgoingKey,
+    children,
+    exitKey,
+    exitChildren,
     active
   } = Control.use(state => {
     if(props.animateOnMount)
       state.runTransition()
   });
 
-  status.import(props, [
+  state.import(props, [
     "currentKey",
     "children",
     "time",
@@ -134,7 +134,7 @@ const Conveyor = memo<ConveyorProps>((props) => {
     ? [onLeave, onEnter]
     : [onEnter, onLeave];
 
-  const outState = outgoingContent ? classEnd : onStable;
+  const outState = exitChildren ? classEnd : onStable;
   const inState = active ? onStable : classStart;
 
   return (
@@ -143,14 +143,14 @@ const Conveyor = memo<ConveyorProps>((props) => {
         className={className}
         key={key}
         state={inState}> 
-        {content} 
+        {children} 
       </InnerContent>
-      { outgoingKey 
+      { exitKey 
         ? <InnerContent
             className={className}
-            key={outgoingKey}
+            key={exitKey}
             state={outState}>
-            {outgoingContent}
+            {exitChildren}
           </InnerContent>
         : false
       }
