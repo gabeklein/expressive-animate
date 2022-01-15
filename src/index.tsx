@@ -4,53 +4,26 @@ import React, { Fragment, memo, ReactNode } from 'react';
 class Control extends Model {
   // from props
   didAnimate?(): void
-  shouldUpdateAnimate?(currentKey: string): string | boolean;
+  shouldAnimate?(newKey: string): boolean;
+
+  time = 1000;
   animateOnMount = false;
   children: ReactNode;
-  time = 300;
+  currentKey = on("", next => {
+    if(!this.shouldAnimate || this.shouldAnimate(next)){
+      this.exitChildren = this.children;
+      this.exitKey = this.key;
+      this.runTransition();
+    }
 
+    this.key = next;
+  })
+
+  // state
   active = true;
   key = "";
   exitChildren?: ReactNode = undefined;
   exitKey?: string = undefined; 
-
-  currentKey = on("", next => {
-    this.runTransition();
-
-    this.exitChildren = this.children;
-    this.exitKey = this.key;
-    this.key = next;
-  })
-
-  // componentWillRender(){
-  //   let doTransition = false;
-  
-  //   const existingContent = this.children;
-  //   const existingKey = this.key;
-  
-  //   if(this.shouldUpdateAnimate){
-  //     const newKey = this.shouldUpdateAnimate(existingKey);
-      
-  //     if(!newKey || newKey === existingKey)
-  //       doTransition = false;
-  //     else {
-  //       if(newKey !== true && newKey !== this.key)
-  //         this.key = newKey
-    
-  //       doTransition = true;
-  //     }
-  //   }
-    
-  //   else if(currentKey !== existingKey){
-  //     this.key = currentKey;
-  
-  //     if(existingKey !== undefined)
-  //       doTransition = true;
-  //   }
-  
-  //   if(doTransition)
-  //     this.runTransition(existingContent, existingKey);
-  // }
 
   runTransition(){
     this.active = false;
@@ -84,7 +57,7 @@ interface ConveyorProps {
   animateOnMount: boolean
 
   didAnimate?(): void
-  shouldUpdateAnimate?(currentKey: string): string | boolean;
+  shouldAnimate?(newKey: string): boolean;
 }
 
 const Conveyor = memo<ConveyorProps>((props) => {
@@ -126,15 +99,15 @@ const Conveyor = memo<ConveyorProps>((props) => {
   return (
     <Fragment>
       <Content 
-        className={className}
         key={key}
+        className={className}
         state={enter}> 
         {children} 
       </Content>
       { exitKey 
         ? <Content
-            className={className}
             key={exitKey}
+            className={className}
             state={exit}>
             {exitChildren}
           </Content>
