@@ -57,10 +57,15 @@ function useRefresh(){
   };
 }
 
-function useConveyorStatus(
-  props: ConveyorProps
-): ConveyorStatus {
-  
+const Conveyor = memo<ConveyorProps>((props) => {
+  let {
+    onEnter = "incoming",
+    onLeave = "outgoing",
+    onStable = "stable",
+    reverse = false,
+    className
+  } = props;
+
   const {
     shouldUpdateAnimate,
     time = 300,
@@ -96,6 +101,7 @@ function useConveyorStatus(
     }
   })
 
+  let doTransition = false;
   const existingContent = status.content;
   const existingKey = status.key;
 
@@ -105,50 +111,40 @@ function useConveyorStatus(
     const newKey = shouldUpdateAnimate(existingKey);
     
     if(!newKey || newKey === existingKey)
-      return status;
-
-    if(newKey !== true 
-    && newKey !== status.key)
-      status.key = newKey
+      doTransition = false;
+    else {
+      if(newKey !== true && newKey !== status.key)
+        status.key = newKey
+  
+      doTransition = true;
+    }
   }
   
-  else if(currentKey === existingKey)
-    return status;
-
-  else {
+  else if(currentKey !== existingKey){
     status.key = currentKey;
-    if(existingKey === undefined)
-      return status;
+
+    if(existingKey !== undefined)
+      doTransition = true;
   }
 
-  status.outgoingContent = existingContent;
-  status.outgoingKey = existingKey;
-  status.active = false;
-
-  setTimeout(() => {
-    status.active = true;
-    requestUpdate();
-  }, 1);
-
-  setTimeout(() => {
-    status.outgoingContent = undefined;
-    status.outgoingKey = undefined;
-    if(typeof didFinish == "function")
-      didFinish();
-    requestUpdate();
-  }, time)
-
-  return status;
-}
-
-const Conveyor = memo<ConveyorProps>((props) => {
-  let {
-    onEnter = "incoming",
-    onLeave = "outgoing",
-    onStable = "stable",
-    reverse = false,
-    className
-  } = props;
+  if(doTransition){
+    status.outgoingContent = existingContent;
+    status.outgoingKey = existingKey;
+    status.active = false;
+  
+    setTimeout(() => {
+      status.active = true;
+      requestUpdate();
+    }, 1);
+  
+    setTimeout(() => {
+      status.outgoingContent = undefined;
+      status.outgoingKey = undefined;
+      if(typeof didFinish == "function")
+        didFinish();
+      requestUpdate();
+    }, time)
+  }
 
   const {
     content,
@@ -156,7 +152,15 @@ const Conveyor = memo<ConveyorProps>((props) => {
     key,
     outgoingKey,
     active
-  } = useConveyorStatus(props);
+  } = status;
+
+  // const {
+  //   content,
+  //   outgoingContent,
+  //   key,
+  //   outgoingKey,
+  //   active
+  // } = Control.uses(props);
 
   const [classStart, classEnd] = reverse 
     ? [onLeave, onEnter]
