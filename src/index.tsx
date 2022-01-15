@@ -1,9 +1,8 @@
-import React, { memo, createContext, Fragment, SFC, useContext, useEffect, useRef, useState } from 'react';
-import { sleep } from 'good-timing';
+import React, { Fragment, memo, useEffect, useRef, useState } from 'react';
 
-const TransitionState = createContext([""]);
-const TransitionStateProvider = TransitionState.Provider;
-const useConveyorState = () => useContext(TransitionState);
+// const TransitionState = createContext([""]);
+// const TransitionStateProvider = TransitionState.Provider;
+// const useConveyorState = () => useContext(TransitionState);
 
 // const PendingState = createContext();
 // const PendingStateProvider = PendingState.Provider;
@@ -64,7 +63,7 @@ function useConveyorStatus(
   
   const {
     shouldUpdateAnimate,
-    time,
+    time = 300,
     children,
     didFinish,
     currentKey
@@ -79,10 +78,10 @@ function useConveyorStatus(
 
     if(props.animateOnMount){
       status.active = false;
-      sleep(1, () => {
+      setTimeout(() => {
         status.active = true;
         requestUpdate();
-      })
+      }, 1)
     }
     else {
       status.active = true;
@@ -126,18 +125,18 @@ function useConveyorStatus(
   status.outgoingKey = existingKey;
   status.active = false;
 
-  sleep(1, () => {
+  setTimeout(() => {
     status.active = true;
     requestUpdate();
-  });
+  }, 1);
 
-  sleep(time || 300, () => {
+  setTimeout(() => {
     status.outgoingContent = undefined;
     status.outgoingKey = undefined;
     if(typeof didFinish == "function")
       didFinish();
     requestUpdate();
-  })
+  }, time)
 
   return status;
 }
@@ -187,22 +186,18 @@ const Conveyor = memo<ConveyorProps>((props) => {
   )
 })
 
-const InnerContent: SFC<InnerContentProps> = 
-  ({ children, className, state }) => (
-    <TransitionStateProvider value={[state]}>
-      {className
-        ? <div 
-            className={className + " " + state}>
-            {...children}
-          </div>
-        : <Fragment>
-            {...children}
-          </Fragment>
-      }
-    </TransitionStateProvider>
-  )
+const InnerContent: React.FC<InnerContentProps> = 
+  ({ children, className, state }: any) => {
+    if(!className)
+      return children;
+
+    return (
+      <div className={className + " " + state}>
+        {children}
+      </div>
+    )
+  }
 
 export {
-  useConveyorState,
   Conveyor
 }
