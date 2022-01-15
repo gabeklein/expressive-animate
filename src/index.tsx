@@ -48,10 +48,10 @@ class Animate extends Model {
       exit.removeEventListener("transitionend", reset);
       exit.removeEventListener("transitioncancel", reset);
 
-      if(e instanceof Event && e.type == "transitionend")
-        this.reset();
-      else
-        this.reset(true);
+      const isComplete =
+        e instanceof Event && e.type == "transitionend";
+
+      this.reset(!isComplete);
     }
 
     const timeout = setTimeout(reset, this.timeout);
