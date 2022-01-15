@@ -1,4 +1,4 @@
-import Model, { on } from '@expressive/mvc';
+import Model, { on, ref } from '@expressive/mvc';
 import React, { Fragment, memo, ReactNode } from 'react';
 
 class Animate extends Model {
@@ -7,6 +7,7 @@ class Animate extends Model {
   shouldAnimate?(newKey: string): boolean;
 
   duration = 300;
+  timeout = Math.max(1000, this.duration);
   animateOnMount = false;
   children: ReactNode;
   currentKey = on("", next => {
@@ -22,8 +23,16 @@ class Animate extends Model {
   // state
   active = true;
   key = "";
+
   exitChildren?: ReactNode = undefined;
-  exitKey?: string = undefined; 
+  exitKey?: string = undefined;
+
+  exitElement = ref((el: HTMLDivElement) => {
+    if(el){
+      el.addEventListener("transitionend", () => this.reset());
+      el.addEventListener("transitioncancel", () => this.reset(true));
+    }
+  })
 
   runTransition(){
     this.active = false;
@@ -33,13 +42,16 @@ class Animate extends Model {
     }, 1);
   
     setTimeout(() => {
-      this.exitChildren = undefined;
-      this.exitKey = undefined;
+      this.reset(true);
+    }, this.timeout)
+  }
 
-      if(typeof this.didAnimate == "function")
-        this.didAnimate();
-    }, this.duration)
+  reset = (cancelled?: boolean) => {
+    this.exitChildren = undefined;
+    this.exitKey = undefined;
 
+    if(!cancelled && typeof this.didAnimate == "function")
+      this.didAnimate();
   }
 }
 
@@ -75,6 +87,7 @@ const Conveyor = memo<ConveyorProps>((props) => {
     children,
     exitKey,
     exitChildren,
+    exitElement,
     active
   } = Animate.use(state => {
     if(props.animateOnMount)
@@ -109,6 +122,7 @@ const Conveyor = memo<ConveyorProps>((props) => {
       </div>
       { exitKey 
         ? <div
+            ref={exitElement}
             key={exitKey}
             style={style}
             className={exit}>
