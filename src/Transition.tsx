@@ -8,13 +8,14 @@ class Animate extends Model {
 
   duration = 300;
   timeout = Math.max(1000, this.duration);
-  animateOnMount = false;
   children: ReactNode;
   currentKey = on("", next => {
     if(!this.shouldAnimate || this.shouldAnimate(next)){
       this.exitChildren = this.children;
       this.exitKey = this.key;
-      this.runTransition();
+
+      if(!this.active)
+        this.runTransition();
     }
 
     this.key = next;
@@ -30,7 +31,6 @@ class Animate extends Model {
 
   async runTransition(){
     this.active = false;
-
     await this.update();
 
     this.active = true;
@@ -80,6 +80,7 @@ declare namespace Transition {
     onExit?: string;
     onStable?: string;
     reverse?: boolean;
+    animateOnMount?: boolean;
   
     didAnimate?(): void
     shouldAnimate?(newKey: string): boolean;
@@ -103,7 +104,10 @@ const Transition = memo<Transition.Props>((props) => {
     exitChildren,
     exitElement,
     active
-  } = Animate.use();
+  } = Animate.use(state => {
+    if(props.animateOnMount)
+      state.active = false;
+  });
 
   state.import(props, [
     "currentKey",

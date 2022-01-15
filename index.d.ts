@@ -11,6 +11,7 @@ declare namespace Transition {
     onExit?: string;
     onStable?: string;
     reverse?: boolean;
+    animateOnMount?: boolean;
   
     didAnimate?(): void
     shouldAnimate?(newKey: string): boolean;
