@@ -1,5 +1,5 @@
 import Model, { on, ref } from '@expressive/mvc';
-import React, { Fragment, memo, ReactNode } from 'react';
+import React, { Fragment, ReactNode } from 'react';
 
 class Animate extends Model {
   // from props
@@ -8,17 +8,18 @@ class Animate extends Model {
 
   duration = 300;
   timeout = Math.max(1000, this.duration);
-  children: ReactNode;
+  children: ReactNode = undefined;
   currentKey = on("", next => {
+    console.log(`new key is: ${next}`)
+    console.log(`old key is ${this.currentKey}`)
+
     if(!this.shouldAnimate || this.shouldAnimate(next)){
       this.exitChildren = this.children;
-      this.exitKey = this.key;
+      this.exitKey = this.currentKey;
 
       if(!this.active)
         this.runTransition();
     }
-
-    this.key = next;
   })
 
   // state
@@ -87,19 +88,19 @@ declare namespace Transition {
   }
 }
 
-const Transition = memo<Transition.Props>((props) => {
+const Transition = (props: Transition.Props) => {
   let {
     onEnter = "enter",
     onExit = "exit",
     onStable = "stable",
     reverse = false,
-    className = "conveyor"
+    className = "conveyor",
+    currentKey,
+    children
   } = props;
 
   const {
     get: state,
-    key,
-    children,
     exitKey,
     exitChildren,
     exitElement,
@@ -121,22 +122,22 @@ const Transition = memo<Transition.Props>((props) => {
     ? [onExit, onEnter]
     : [onEnter, onExit];
 
-  const enter = `${className} ${active ? onStable : classStart}`;
-  const exit = `${className} ${exitChildren ? classEnd : onStable}`;
+  const enter = active ? onStable : classStart;
+  const exit = active ? classEnd : onStable;
   const style = { transitionDuration: state.duration + "ms" };
 
   return (
     <Fragment>
       <div 
-        key={key}
-        className={enter}
+        key={currentKey}
+        className={className + " " + enter}
         style={style}> 
         {children} 
       </div>
       { exitKey && 
         <div
           key={exitKey}
-          className={exit}
+          className={className + " " + exit}
           style={style}
           ref={exitElement}>
           {exitChildren}
@@ -144,6 +145,23 @@ const Transition = memo<Transition.Props>((props) => {
       }
     </Fragment>
   )
-})
+}
 
 export default Transition;
+
+
+
+  
+// console.log(`----------------------`);
+
+// console.log(`active (${!!active})`)
+
+// if(children)
+//   console.log(`enter (${enter}) - ${(children as any).type.name}`);
+// else
+//   console.log(`enter - (none)`)
+
+// if(exitKey)
+//   console.log(`exit (${exit}) - ${(exitChildren as any).type.name}`);
+// else
+//   console.log(`exit (removed)`)
