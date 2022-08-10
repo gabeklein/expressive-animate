@@ -1,4 +1,4 @@
-import Model, { on, ref } from '@expressive/mvc';
+import Model, { ref, set } from '@expressive/mvc';
 import React, { Fragment, ReactNode } from 'react';
 
 class Animate extends Model {
@@ -9,7 +9,7 @@ class Animate extends Model {
   duration = 300;
   timeout = Math.max(1000, this.duration);
   children: ReactNode = undefined;
-  currentKey = on("", next => {
+  currentKey = set("", next => {
     console.log(`new key is: ${next}`)
     console.log(`old key is ${this.currentKey}`)
 
