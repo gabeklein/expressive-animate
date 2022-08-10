@@ -114,7 +114,7 @@ const Transition = (props: Transition.Props) => {
     "currentKey",
     "children",
     "duration",
-    "shouldUpdateAnimate",
+    "shouldAnimate",
     "didAnimate"
   ])
 
