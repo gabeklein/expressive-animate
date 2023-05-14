@@ -1,13 +1,12 @@
-import Model, { ref, set } from '@expressive/mvc';
+import Model, { ref, set } from '@expressive/react';
 import React, { Fragment, ReactNode } from 'react';
 
 class Animate extends Model {
-  // from props
   didAnimate?(): void
   shouldAnimate?(newKey: string): boolean;
 
   duration = 300;
-  timeout = Math.max(1000, this.duration);
+  timeout = this.duration;
   children: ReactNode = undefined;
   currentKey = set("", next => {
     console.log(`new key is: ${next}`)
@@ -22,7 +21,6 @@ class Animate extends Model {
     }
   })
 
-  // state
   active = true;
   key = "";
 
@@ -32,8 +30,7 @@ class Animate extends Model {
 
   async runTransition(){
     this.active = false;
-    await this.update();
-
+    await this.on(0);
     this.active = true;
     this.ensureReset();
   }
@@ -46,8 +43,8 @@ class Animate extends Model {
 
     const reset = (e: any) => {
       clearTimeout(timeout);
-      exit.removeEventListener("transitionend", reset);
-      exit.removeEventListener("transitioncancel", reset);
+      // exit.removeEventListener("transitionend", reset);
+      // exit.removeEventListener("transitioncancel", reset);
 
       const isComplete =
         e instanceof Event && e.type == "transitionend";
@@ -57,8 +54,8 @@ class Animate extends Model {
 
     const timeout = setTimeout(reset, this.timeout);
 
-    exit.addEventListener("transitionend", reset);
-    exit.addEventListener("transitioncancel", reset);
+    // exit.addEventListener("transitionend", reset);
+    // exit.addEventListener("transitioncancel", reset);
   }
 
   reset = (didCancel?: boolean) => {
@@ -100,7 +97,7 @@ const Transition = (props: Transition.Props) => {
   } = props;
 
   const {
-    get: state,
+    is: state,
     exitKey,
     exitChildren,
     exitElement,
@@ -110,7 +107,7 @@ const Transition = (props: Transition.Props) => {
       state.active = false;
   });
 
-  state.import(props, [
+  state.set(props, [
     "currentKey",
     "children",
     "duration",
@@ -124,7 +121,9 @@ const Transition = (props: Transition.Props) => {
 
   const enter = active ? onStable : classStart;
   const exit = active ? classEnd : onStable;
-  const style = { transitionDuration: state.duration + "ms" };
+  const style = {
+    transitionDuration: state.duration + "ms"
+  };
 
   return (
     <Fragment>
@@ -148,20 +147,3 @@ const Transition = (props: Transition.Props) => {
 }
 
 export default Transition;
-
-
-
-  
-// console.log(`----------------------`);
-
-// console.log(`active (${!!active})`)
-
-// if(children)
-//   console.log(`enter (${enter}) - ${(children as any).type.name}`);
-// else
-//   console.log(`enter - (none)`)
-
-// if(exitKey)
-//   console.log(`exit (${exit}) - ${(exitChildren as any).type.name}`);
-// else
-//   console.log(`exit (removed)`)
