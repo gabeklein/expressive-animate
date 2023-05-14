@@ -1,9 +1,10 @@
 {
   "name": "@expressive/animate",
-  "version": "1.0.0-beta.0",
+  "version": "0.0.1",
   "main": "lib/index.js",
   "types": "index.d.ts",
   "repository": "https://github.com/gabeklein/expressive-animate",
+  "license": "MIT",
   "author": {
     "name": "Gabe Klein",
     "email": "gabe@termtm.com",
@@ -12,11 +13,11 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w --sourcemap",
+    "start": "npm --prefix ./example start",
     "preversion": "npm run build",
     "publish:beta": "npm version prerelease --preid=beta",
     "postversion": "npm publish"
   },
-  "license": "MIT",
   "files": [
     "/lib",
     "index.d.ts"
@@ -25,12 +26,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@expressive/mvc": "^0.7.2"
+    "@expressive/react": "^0.21.6"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.38",
+    "react": "^17.0.2"
   },
   "peerDependencies": {
     "react": "^17.0.2"
-  },
-  "devDependencies": {
-    "@types/react": "^17.0.38"
   }
 }

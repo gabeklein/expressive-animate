@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "start": "webpack serve --mode=development --hot"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.17.12",
+    "@expressive/babel-preset-react": "^1.0.0-beta.103",
+    "babel-loader": "^8.2.5",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.9.2"
+  }
+}
