@@ -8,6 +8,14 @@ class Animate extends Model {
   duration = 300;
   timeout = this.duration;
   children: ReactNode = undefined;
+
+  active = true;
+  key = "";
+
+  exitChildren?: ReactNode = undefined;
+  exitKey?: string = undefined;
+  exitElement = ref<HTMLDivElement>();
+
   currentKey = set("", next => {
     console.log(`new key is: ${next}`)
     console.log(`old key is ${this.currentKey}`)
@@ -20,13 +28,6 @@ class Animate extends Model {
         this.runTransition();
     }
   })
-
-  active = true;
-  key = "";
-
-  exitChildren?: ReactNode = undefined;
-  exitKey?: string = undefined;
-  exitElement = ref<HTMLDivElement>();
 
   async runTransition(){
     this.active = false;
@@ -133,7 +134,7 @@ const Transition = (props: Transition.Props) => {
         style={style}> 
         {children} 
       </div>
-      { exitKey && 
+      {exitKey && 
         <div
           key={exitKey}
           className={className + " " + exit}
