@@ -134,7 +134,7 @@ const Transition = (props: Transition.Props) => {
         style={style}> 
         {children} 
       </div>
-      {exitKey && 
+      {exitKey && (
         <div
           key={exitKey}
           className={className + " " + exit}
@@ -142,7 +142,7 @@ const Transition = (props: Transition.Props) => {
           ref={exitElement}>
           {exitChildren}
         </div>
-      }
+      )}
     </Fragment>
   )
 }
